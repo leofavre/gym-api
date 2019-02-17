@@ -27,7 +27,7 @@
     "afterEach": true
   },
   "overrides": [{
-    "files": "*.test.js",
+    "files": "*.(test|spec).js",
     "rules": {
       "no-unused-expressions": "off"
     }
