@@ -1,5 +1,9 @@
-const mongoose = require('mongoose');
-const { DATABASE_URL } = require('./constants.js');
+require('./db/connect.js');
+const app = require('./app/setup.js');
+const { PORT } = require('./constants.js');
 
-mongoose.Promise = global.Promise;
-mongoose.connect(`${DATABASE_URL}/GymApp`, { useNewUrlParser: true });
+require('./resources/Training/route.js')(app);
+
+app.listen(PORT, () => {
+  console.log(`Started on port ${PORT}`);
+});
