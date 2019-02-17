@@ -1,7 +1,6 @@
 const mongoose = require('mongoose');
-const { DATABASE_URL } = require('../constants.js');
 
 mongoose.Promise = global.Promise;
-mongoose.connect(`${DATABASE_URL}/GymApp`, { useNewUrlParser: true });
+mongoose.connect(`mongodb://localhost:27017/GymApp`, { useNewUrlParser: true });
 
 module.exports = { mongoose };
