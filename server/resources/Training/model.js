@@ -5,7 +5,7 @@ const Training = model('Training', {
     type: Number,
     required: true
   },
-  withTrainner: {
+  withTrainer: {
     type: Boolean,
     default: false
   }

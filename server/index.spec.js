@@ -12,7 +12,7 @@ describe('POST /trainings', () => {
   it('Should create a new training.', done => {
     const validTraining = {
       completedAt: 10050,
-      withTrainner: true
+      withTrainer: true
     };
 
     request(app)

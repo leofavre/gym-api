@@ -5,8 +5,17 @@ module.exports = app => {
     const training = new Training(req.body);
 
     try {
-      const doc = await training.save();
-      res.send(doc);
+      const response = await training.save();
+      res.send(response);
+    } catch (err) {
+      res.status(400).send(err);
+    }
+  });
+
+  app.get('/trainings', async (req, res) => {
+    try {
+      const trainings = await Training.find();
+      res.send({ trainings });
     } catch (err) {
       res.status(400).send(err);
     }
