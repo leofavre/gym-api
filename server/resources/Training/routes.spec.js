@@ -2,8 +2,8 @@ const { expect } = require('chai');
 const request = require('supertest');
 const { ObjectID } = require('mongodb');
 
-const { app } = require('./index.js');
-const { Training } = require('./resources/Training/model.js');
+const { app } = require('../../index.js');
+const { Training } = require('./model.js');
 
 const day = 1000 * 60 * 60 * 24;
 const today = new Date().getTime();
@@ -128,6 +128,41 @@ describe('GET /trainings/:id', () => {
   it('Should return a 404 if id is invalid.', done => {
     request(app)
       .get(`/trainings/bogusId`)
+      .expect(404)
+      .end(done);
+  });
+});
+
+describe('DELETE /trainings/:id', () => {
+  it('Should delete a single training by its id.', done => {
+    request(app)
+      .delete(`/trainings/${initialTrainings[0]._id.toHexString()}`)
+      .expect(200)
+      .expect(res => {
+        expect(res.body.data.length).to.equal(1);
+
+        res.body.data.forEach((item, index) => {
+          expect(item).to.include({
+            ...initialTrainings[index],
+            _id: initialTrainings[index]._id.toHexString()
+          });
+        });
+      })
+      .end(done);
+  });
+
+  it('Should return a 404 if training is not found.', done => {
+    const validId = new ObjectID().toHexString();
+
+    request(app)
+      .delete(`/trainings/${validId}`)
+      .expect(404)
+      .end(done);
+  });
+
+  it('Should return a 404 if id is invalid.', done => {
+    request(app)
+      .delete(`/trainings/bogusId`)
       .expect(404)
       .end(done);
   });

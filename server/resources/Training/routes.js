@@ -44,4 +44,25 @@ module.exports = app => {
       res.status(400).send(err);
     }
   });
+
+  app.delete('/trainings/:id', async (req, res) => {
+    const { id } = req.params;
+
+    if (!ObjectID.isValid(id)) {
+      res.status(404).send();
+      return undefined;
+    }
+
+    try {
+      const dbTraining = await Training.findByIdAndDelete(id);
+
+      if (dbTraining) {
+        res.send({ data: [dbTraining] });
+      } else {
+        res.status(404).send();
+      }
+    } catch (err) {
+      res.status(400).send(err);
+    }
+  });
 };
