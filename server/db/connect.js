@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
-const { DATABASE_URL } = require('../constants.js');
+const { MONGO_DB_URI } = require('../constants.js');
 
 mongoose.Promise = global.Promise;
-mongoose.connect(`${DATABASE_URL}/GymApp`, { useNewUrlParser: true });
+mongoose.connect(`${MONGO_DB_URI}`, { useNewUrlParser: true });
 
 module.exports = { mongoose };
