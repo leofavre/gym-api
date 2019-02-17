@@ -2,8 +2,6 @@ const { Training } = require('./model.js');
 
 module.exports = app => {
   app.post('/trainings', async (req, res) => {
-    console.log(req.body);
-
     const training = new Training(req.body);
 
     try {

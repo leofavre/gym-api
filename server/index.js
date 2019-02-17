@@ -7,3 +7,5 @@ require('./resources/Training/route.js')(app);
 app.listen(PORT, () => {
   console.log(`Started on port ${PORT}`);
 });
+
+module.exports = { app };
