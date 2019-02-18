@@ -1,9 +1,12 @@
 const { ObjectID } = require('mongodb');
 const { Training } = require('./model.js');
 
+const emptyData = { data: [] };
+
 module.exports = app => {
   app.post('/trainings', async (req, res) => {
-    const training = new Training(req.body);
+    const { completedAt, withTrainer } = req.body;
+    const training = new Training({ completedAt, withTrainer });
 
     try {
       const dbTraining = await training.save();
@@ -28,7 +31,7 @@ module.exports = app => {
     const { id } = req.params;
 
     if (!ObjectID.isValid(id)) {
-      res.status(404).send();
+      res.status(404).send(emptyData);
       return undefined;
     }
 
@@ -38,7 +41,7 @@ module.exports = app => {
       if (dbTraining) {
         res.send({ data: [dbTraining] });
       } else {
-        res.status(404).send();
+        res.status(404).send(emptyData);
       }
     } catch (err) {
       res.status(400).send(err);
@@ -49,7 +52,7 @@ module.exports = app => {
     const { id } = req.params;
 
     if (!ObjectID.isValid(id)) {
-      res.status(404).send();
+      res.status(404).send(emptyData);
       return undefined;
     }
 
@@ -59,7 +62,40 @@ module.exports = app => {
       if (dbTraining) {
         res.send({ data: [dbTraining] });
       } else {
-        res.status(404).send();
+        res.status(404).send(emptyData);
+      }
+    } catch (err) {
+      res.status(400).send(err);
+    }
+  });
+
+  app.patch('/trainings/:id', async (req, res) => {
+    const { withTrainer, completedAt } = req.body;
+    const { id } = req.params;
+
+    if (!ObjectID.isValid(id)) {
+      res.status(404).send(emptyData);
+      return undefined;
+    }
+
+    const patch = {};
+
+    if (withTrainer != null) {
+      patch.withTrainer = withTrainer;
+    }
+
+    if (completedAt != null) {
+      patch.completedAt = completedAt;
+    }
+
+    try {
+      const dbTraining = await Training
+        .findByIdAndUpdate(id, { $set: patch }, { new: true });
+
+      if (dbTraining) {
+        res.send({ data: [dbTraining] });
+      } else {
+        res.status(404).send(emptyData);
       }
     } catch (err) {
       res.status(400).send(err);

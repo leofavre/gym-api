@@ -19,6 +19,8 @@ const initialTrainings = [{
   withTrainer: false
 }];
 
+const firstItemId = initialTrainings[0]._id.toHexString();
+
 beforeEach(async () => {
   await Training.deleteMany({});
   await Training.insertMany(initialTrainings);
@@ -101,7 +103,7 @@ describe('GET /trainings', () => {
 describe('GET /trainings/:id', () => {
   it('Should get a single training by its id.', done => {
     request(app)
-      .get(`/trainings/${initialTrainings[0]._id.toHexString()}`)
+      .get(`/trainings/${firstItemId}`)
       .expect(200)
       .expect(res => {
         expect(res.body.data.length).to.equal(1);
@@ -136,7 +138,7 @@ describe('GET /trainings/:id', () => {
 describe('DELETE /trainings/:id', () => {
   it('Should delete a single training by its id.', done => {
     request(app)
-      .delete(`/trainings/${initialTrainings[0]._id.toHexString()}`)
+      .delete(`/trainings/${firstItemId}`)
       .expect(200)
       .expect(res => {
         expect(res.body.data.length).to.equal(1);
@@ -165,5 +167,73 @@ describe('DELETE /trainings/:id', () => {
       .delete(`/trainings/bogusId`)
       .expect(404)
       .end(done);
+  });
+});
+
+describe('PATCH /trainings/:id', () => {
+  it('Should update training with withTrainer.', done => {
+    request(app)
+      .patch(`/trainings/${firstItemId}`)
+      .send({ withTrainer: false })
+      .expect(200)
+      .expect(res => {
+        expect(res.body.data.length).to.equal(1);
+
+        res.body.data.forEach((item, index) => {
+          expect(item).to.include({
+            ...initialTrainings[index],
+            _id: initialTrainings[index]._id.toHexString(),
+            withTrainer: false
+          });
+        });
+      })
+      .end(err => {
+        if (err) {
+          done(err);
+          return undefined;
+        }
+
+        Training.findById(firstItemId)
+          .then(dbTraining => {
+            expect(dbTraining.withTrainer).to.be.false;
+            done();
+          })
+          .catch(err => {
+            done(err);
+          });
+      });
+  });
+
+  it('Should update training with completedAt.', done => {
+    request(app)
+      .patch(`/trainings/${firstItemId}`)
+      .send({ completedAt: 123456789 })
+      .expect(200)
+      .expect(res => {
+        expect(res.body.data.length).to.equal(1);
+
+        res.body.data.forEach((item, index) => {
+          expect(item).to.include({
+            ...initialTrainings[index],
+            _id: initialTrainings[index]._id.toHexString(),
+            completedAt: 123456789
+          });
+        });
+      })
+      .end(err => {
+        if (err) {
+          done(err);
+          return undefined;
+        }
+
+        Training.findById(firstItemId)
+          .then(dbTraining => {
+            expect(dbTraining.completedAt).to.equal(123456789);
+            done();
+          })
+          .catch(err => {
+            done(err);
+          });
+      });
   });
 });
